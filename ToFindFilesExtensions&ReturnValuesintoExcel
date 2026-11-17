@@ -1,0 +1,5 @@
+#Powershell Script#: 
+Get-ChildItem -Path "E:\SD" -Recurse -File |
+    Where-Object { $_.Extension -in ".pdf", ".dwg" } |
+    Select-Object Name, Extension, FullName, Length |
+    Export-Csv -Path "E:\SD\filelist2.csv" -NoTypeInformation -Encoding UTF8

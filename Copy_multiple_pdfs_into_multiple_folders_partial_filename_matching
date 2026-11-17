@@ -1,0 +1,184 @@
+
+# =====================================================
+# CONFIGURATION
+# =====================================================
+
+$parentPath = "E:\Commercial\Letter Received\AMAALA\test"
+
+# =====================================================
+# LIST OF FOLDER NAMES
+# =====================================================
+
+$folderNames = @(
+    "1TB01100-100000-AMA-LTR-0003"
+    "1TB01100-100000-AMA-LTR-0005"
+    "1TB01100-100C29-AMA-LTR-0001"
+    "1TB01100-100C29-AMA-LTR-0002"
+    "1TB01100-100C29-AMA-LTR-0003"
+    "1TB01100-100C29-AMA-LTR-0004"
+    "1TB01100-100C29-AMA-LTR-0005"
+    "1TB01100-100C29-AMA-LTR-0006"
+    "1TB01100-100C29-AMA-LTR-0007"
+    "1TB01100-100C29-AMA-LTR-0008"
+    "1TB01100-100C29-AMA-LTR-0009"
+    "1TB01100-100C29-AMA-LTR-0010"
+    "1TB01100-100C29-AMA-LTR-0012"
+    "1TB01100-100C29-AMA-LTR-0013"
+    "1TB01100-100C29-AMA-LTR-0014"
+    "1TB01100-100C29-AMA-LTR-0015"
+    "1TB01100-100C29-AMA-LTR-0016"
+    "1TB01100-100C29-AMA-LTR-0017"
+    "1TB01100-100C29-AMA-LTR-0018"
+    "1TB01100-100C29-AMA-LTR-0019"
+    "1TB01100-100C29-AMA-LTR-0020"
+    "1TB01100-100C29-AMA-LTR-0021"
+    "1TB01100-100C29-AMA-LTR-0022"
+    "1TB01100-100C29-AMA-LTR-0023"
+    "1TB01100-100C29-AMA-LTR-0024"
+    "1TB01100-100C29-AMA-LTR-0025"
+    "1TB01100-100C29-AMA-LTR-0026"
+    "1TB01100-100C29-AMA-LTR-0027"
+    "1TB01100-100C29-AMA-LTR-0029"
+    "1TB01100-100C29-AMA-LTR-0030"
+    "1TB01100-100C29-AMA-LTR-0031"
+    "1TB01100-100C29-AMA-LTR-0034"
+    "1TB01100-100C29-AMA-LTR-0035"
+    "1TB01100-100C29-AMA-LTR-0038"
+    "1TB01100-100C29-AMA-LTR-0041"
+    "1TB01100-100C29-AMA-LTR-0043"
+    "1TB01100-100C29-AMA-LTR-0044"
+    "1TB01100-100C29-AMA-LTR-0048"
+    "1TB01100-100C29-AMA-LTR-0049"
+    "1TB01100-100C29-AMA-LTR-0051"
+    "1TB01100-100C29-AMA-LTR-0052"
+    "1TB01100-100C29-AMA-LTR-0053"
+    "1TB01100-100C29-AMA-LTR-0054"
+    "1TB01100-100C29-AMA-LTR-0055"
+    "1TB01100-100C29-AMA-LTR-0058"
+    "1TB01100-100C29-AMA-LTR-0060"
+    "1TB01100-100C29-AMA-LTR-0063"
+    "1TB01100-100C29-AMA-LTR-0064"
+    "1TB01100-100C29-AMA-LTR-0067"
+    "1TB01100-100C29-AMA-LTR-0069"
+    "1TB01100-100C29-AMA-LTR-0071"
+    "1TB01100-100C29-AMA-LTR-0073"
+    "1TB01100-100C29-AMA-LTR-0074"
+    "1TB01100-100C29-AMA-LTR-0078"
+    "1TB01100-100C29-AMA-LTR-0084"
+    "1TB01100-100C29-AMA-LTR-0092"
+    "1TB01100-100C29-AMA-LTR-0095"
+    "1TB01100-100C29-AMA-LTR-0099"
+    "1TB01100-100C29-AMA-LTR-0100"
+    "1TB01100-100C29-AMA-LTR-0101"
+    "1TB01100-100C29-AMA-LTR-0102"
+    "1TB01100-100C29-AMA-LTR-0103"
+    "1TB01100-100C29-AMA-LTR-0104"
+    "1TB01100-100C29-AMA-LTR-0105"
+    "1TB01100-100C29-AMA-LTR-0107"
+    "1TB01100-100C29-AMA-LTR-0109"
+)
+
+# =====================================================
+# CHECK DIRECTORY
+# =====================================================
+
+if (!(Test-Path -LiteralPath $parentPath -PathType Container)) {
+    Write-Host "ERROR: Directory not found!" -ForegroundColor Red
+    return
+}
+
+# Get PDF files from the main directory only
+$pdfFiles = Get-ChildItem -LiteralPath $parentPath -Filter "*.pdf" -File
+
+# =====================================================
+# INITIALIZE COUNTERS
+# =====================================================
+
+$copied = 0
+$missing = 0
+$duplicates = 0
+$folderNotFound = 0
+$alreadyExists = 0
+$failed = 0
+
+# =====================================================
+# MATCH AND COPY PDF FILES
+# =====================================================
+
+foreach ($folder in $folderNames) {
+
+    $targetFolder = Join-Path $parentPath $folder
+
+    if (!(Test-Path -LiteralPath $targetFolder -PathType Container)) {
+        Write-Host "FOLDER NOT FOUND: $folder" -ForegroundColor Red
+        $folderNotFound++
+        continue
+    }
+
+    # Partial filename matching:
+    # PDF filename must start with the folder name
+    $matchingPDFs = @(
+        $pdfFiles | Where-Object {
+            $_.BaseName.StartsWith(
+                $folder,
+                [System.StringComparison]::OrdinalIgnoreCase
+            )
+        }
+    )
+
+    if ($matchingPDFs.Count -eq 0) {
+        Write-Host "PDF NOT FOUND: $folder" -ForegroundColor Red
+        $missing++
+        continue
+    }
+
+    if ($matchingPDFs.Count -gt 1) {
+        Write-Host "MULTIPLE MATCHES: $folder" -ForegroundColor Yellow
+        foreach ($pdf in $matchingPDFs) {
+            Write-Host "   $($pdf.Name)" -ForegroundColor Yellow
+        }
+        $duplicates++
+        continue
+    }
+
+    $pdf = $matchingPDFs[0]
+    $destinationFile = Join-Path $targetFolder $pdf.Name
+
+    if (Test-Path -LiteralPath $destinationFile) {
+        Write-Host "ALREADY EXISTS: $($pdf.Name)" -ForegroundColor Yellow
+        $alreadyExists++
+        continue
+    }
+
+    try {
+        Copy-Item -LiteralPath $pdf.FullName `
+                  -Destination $targetFolder `
+                  -ErrorAction Stop
+
+        Write-Host "COPIED: $($pdf.Name)" -ForegroundColor Green
+        $copied++
+    }
+    catch {
+        Write-Host "COPY FAILED: $($pdf.Name)" -ForegroundColor Red
+        Write-Host $_.Exception.Message
+        $failed++
+    }
+}
+
+# =====================================================
+# FINAL SUMMARY
+# =====================================================
+
+Write-Host "`n========================================" -ForegroundColor Cyan
+Write-Host "             COPY SUMMARY               " -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+
+Write-Host "Total folders       : $($folderNames.Count)"
+Write-Host "PDFs copied         : $copied" -ForegroundColor Green
+Write-Host "Already existing    : $alreadyExists" -ForegroundColor Yellow
+Write-Host "PDFs not found      : $missing" -ForegroundColor Red
+Write-Host "Folders not found   : $folderNotFound" -ForegroundColor Red
+Write-Host "Multiple matches    : $duplicates" -ForegroundColor Yellow
+Write-Host "Copy failures       : $failed" -ForegroundColor Red
+
+Write-Host "`nPROCESS COMPLETED!" -ForegroundColor Green

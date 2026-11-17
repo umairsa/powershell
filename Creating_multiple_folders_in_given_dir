@@ -1,0 +1,102 @@
+# Parent directory
+$parentPath = "E:\Commercial\Letter Received\AMAALA\test"
+
+# List of 66 folder names
+$folderNames = @(
+    "1TB01100-100000-AMA-LTR-0003"
+    "1TB01100-100000-AMA-LTR-0005"
+    "1TB01100-100C29-AMA-LTR-0001"
+    "1TB01100-100C29-AMA-LTR-0002"
+    "1TB01100-100C29-AMA-LTR-0003"
+    "1TB01100-100C29-AMA-LTR-0004"
+    "1TB01100-100C29-AMA-LTR-0005"
+    "1TB01100-100C29-AMA-LTR-0006"
+    "1TB01100-100C29-AMA-LTR-0007"
+    "1TB01100-100C29-AMA-LTR-0008"
+    "1TB01100-100C29-AMA-LTR-0009"
+    "1TB01100-100C29-AMA-LTR-0010"
+    "1TB01100-100C29-AMA-LTR-0012"
+    "1TB01100-100C29-AMA-LTR-0013"
+    "1TB01100-100C29-AMA-LTR-0014"
+    "1TB01100-100C29-AMA-LTR-0015"
+    "1TB01100-100C29-AMA-LTR-0016"
+    "1TB01100-100C29-AMA-LTR-0017"
+    "1TB01100-100C29-AMA-LTR-0018"
+    "1TB01100-100C29-AMA-LTR-0019"
+    "1TB01100-100C29-AMA-LTR-0020"
+    "1TB01100-100C29-AMA-LTR-0021"
+    "1TB01100-100C29-AMA-LTR-0022"
+    "1TB01100-100C29-AMA-LTR-0023"
+    "1TB01100-100C29-AMA-LTR-0024"
+    "1TB01100-100C29-AMA-LTR-0025"
+    "1TB01100-100C29-AMA-LTR-0026"
+    "1TB01100-100C29-AMA-LTR-0027"
+    "1TB01100-100C29-AMA-LTR-0029"
+    "1TB01100-100C29-AMA-LTR-0030"
+    "1TB01100-100C29-AMA-LTR-0031"
+    "1TB01100-100C29-AMA-LTR-0034"
+    "1TB01100-100C29-AMA-LTR-0035"
+    "1TB01100-100C29-AMA-LTR-0038"
+    "1TB01100-100C29-AMA-LTR-0041"
+    "1TB01100-100C29-AMA-LTR-0043"
+    "1TB01100-100C29-AMA-LTR-0044"
+    "1TB01100-100C29-AMA-LTR-0048"
+    "1TB01100-100C29-AMA-LTR-0049"
+    "1TB01100-100C29-AMA-LTR-0051"
+    "1TB01100-100C29-AMA-LTR-0052"
+    "1TB01100-100C29-AMA-LTR-0053"
+    "1TB01100-100C29-AMA-LTR-0054"
+    "1TB01100-100C29-AMA-LTR-0055"
+    "1TB01100-100C29-AMA-LTR-0058"
+    "1TB01100-100C29-AMA-LTR-0060"
+    "1TB01100-100C29-AMA-LTR-0063"
+    "1TB01100-100C29-AMA-LTR-0064"
+    "1TB01100-100C29-AMA-LTR-0067"
+    "1TB01100-100C29-AMA-LTR-0069"
+    "1TB01100-100C29-AMA-LTR-0071"
+    "1TB01100-100C29-AMA-LTR-0073"
+    "1TB01100-100C29-AMA-LTR-0074"
+    "1TB01100-100C29-AMA-LTR-0078"
+    "1TB01100-100C29-AMA-LTR-0084"
+    "1TB01100-100C29-AMA-LTR-0092"
+    "1TB01100-100C29-AMA-LTR-0095"
+    "1TB01100-100C29-AMA-LTR-0099"
+    "1TB01100-100C29-AMA-LTR-0100"
+    "1TB01100-100C29-AMA-LTR-0101"
+    "1TB01100-100C29-AMA-LTR-0102"
+    "1TB01100-100C29-AMA-LTR-0103"
+    "1TB01100-100C29-AMA-LTR-0104"
+    "1TB01100-100C29-AMA-LTR-0105"
+    "1TB01100-100C29-AMA-LTR-0107"
+    "1TB01100-100C29-AMA-LTR-0109"
+)
+
+# Check whether the parent directory exists
+if (!(Test-Path -Path $parentPath)) {
+    New-Item -Path $parentPath -ItemType Directory -Force | Out-Null
+}
+
+# Create folders
+$created = 0
+$skipped = 0
+
+foreach ($folder in $folderNames) {
+    $folderPath = Join-Path -Path $parentPath -ChildPath $folder
+
+    if (!(Test-Path -LiteralPath $folderPath)) {
+        New-Item -Path $folderPath -ItemType Directory | Out-Null
+        Write-Host "CREATED: $folder" -ForegroundColor Green
+        $created++
+    }
+    else {
+        Write-Host "EXISTS:  $folder" -ForegroundColor Yellow
+        $skipped++
+    }
+}
+
+# Summary
+Write-Host "`n========== SUMMARY ==========" -ForegroundColor Cyan
+Write-Host "Total folders listed : $($folderNames.Count)"
+Write-Host "Folders created      : $created" -ForegroundColor Green
+Write-Host "Already existing     : $skipped" -ForegroundColor Yellow
+Write-Host "Destination          : $parentPath"

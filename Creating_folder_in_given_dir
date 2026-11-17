@@ -1,0 +1,1 @@
+New-Item -Path "C:\Users\YourName\Documents\NewFolder" -ItemType Directory
